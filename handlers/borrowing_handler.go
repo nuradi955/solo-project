@@ -11,26 +11,23 @@ import (
 )
 
 func BorrowBook(bookID, readerID uint) (*models.Borrowing, error) {
-	// 1. Проверить что книга существует
 	var borrowing models.Borrowing
 	var book models.Book
+
 	if err := data_base.DB.First(&book, bookID).Error; err != nil {
 		return nil, fmt.Errorf("книга с таким id не найдена")
 	}
-	// 2. Проверить что available
 	if book.AvailableCopies < 1 {
 		return nil, fmt.Errorf("книга не доступна")
 	}
 
-	// _
-	// copies > 0
-	// 3. Проверить что читатель существует
 	var reader models.Reader
+
 	if err := data_base.DB.First(&reader, readerID).Error; err != nil {
 		return nil, fmt.Errorf("читатель с таким id не найден")
 	}
-	// 4. Проверить что у читателя нет активных просрочек
 	var overdueCount int64
+
 	if err := data_base.DB.Model(&borrowing).Where("reader_ID=? AND status=? AND due_date<?",
 		readerID, "active", time.Now()).Count(&overdueCount).Error; err != nil {
 		return nil, err
@@ -40,7 +37,6 @@ func BorrowBook(bookID, readerID uint) (*models.Borrowing, error) {
 		return nil, fmt.Errorf("у читателя есть просрочка")
 	}
 
-	// 5. Создать Borrowing с due
 	borrow := models.Borrowing{
 		BookID:   bookID,
 		ReaderId: readerID,
@@ -52,19 +48,12 @@ func BorrowBook(bookID, readerID uint) (*models.Borrowing, error) {
 		return nil, err
 	}
 
-	// date = сегодня + 14 дней
-	// _
-	// 6. Уменьшить available
-
 	book.AvailableCopies -= 1
 
 	if err := data_base.DB.Save(&book).Error; err != nil {
 		return nil, err
 	}
 	return &borrow, nil
-
-	// _
-	// copies на 1
 }
 
 func BorrowBookHTTP(c *gin.Context) {
@@ -130,6 +119,7 @@ func GetBorrowings(c *gin.Context) {
 func GetOverdueBorrowings() ([]models.Borrowing, error) {
 
 	var borrowings []models.Borrowing
+
 	if err := data_base.DB.Model(&models.Borrowing{}).
 		Where("due_date<? AND status=?", time.Now(), "active").
 		Update("status", "overdue").Error; err != nil {
@@ -147,6 +137,7 @@ func GetOverdueBorrowings() ([]models.Borrowing, error) {
 
 func GetBorrowingsOverdueHTTP(c *gin.Context) {
 	res, err := GetOverdueBorrowings()
+
 	if err != nil {
 		c.JSON(404, gin.H{"error": err.Error()})
 		return

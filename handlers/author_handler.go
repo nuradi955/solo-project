@@ -21,6 +21,7 @@ func CreateAuthorHTTP(ctx *gin.Context) {
 		Bio:  req.Bio,
 	}
 	result := config.DB.Create(&res)
+
 	if result.Error != nil {
 		ctx.JSON(500, gin.H{"error": result.Error})
 		return
@@ -49,12 +50,14 @@ func GetAuthorsHTTP(ctx *gin.Context) {
 func GetAuthorByID(ctx *gin.Context) {
 
 	id, err := strconv.Atoi(ctx.Param("id"))
+
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "id должен быть числом"})
 		return
 	}
 	var author models.Author
 	res := config.DB.First(&author, id)
+	
 	if res.Error != nil {
 		ctx.JSON(404, gin.H{"error": "автор не найден"})
 		return

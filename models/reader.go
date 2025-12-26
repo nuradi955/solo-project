@@ -12,7 +12,7 @@ type Reader struct {
 	Email          string    `json:"email" binding:"required,email" gorm:"not null,uniqueIndex"`
 	Phone          string    `json:"phone" binding:"required" gorm:"not null, uniqueIndex"`
 	MembershipDate time.Time `json:"membership_date" gorm:"autoCreateTime"`
-	Borrowings []Borrowing	 
+	Borrowings     []Borrowing
 }
 
 type CreateReader struct {

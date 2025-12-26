@@ -11,17 +11,14 @@ import (
 )
 
 func ReturnBook(borrowingID uint) error {
-	// 1. Проверить что borrowing существует и status = "active"
 	var borrowing models.Borrowing
+
 	if err := data_base.DB.Where("status=? AND id =?", "active", borrowingID).First(&borrowing).Error; err != nil {
 		return err
 	}
-	// 2. Установить returned_at = сейчас
-	// 3. Установить status ="returned"
 	if err := data_base.DB.Model(&borrowing).Updates(map[string]interface{}{"returned_at": time.Now(), "status": "returned"}).Error; err != nil {
 		return err
 	}
-	// 4. Увеличить book.available_copies на 1
 
 	if err := data_base.DB.Model(&models.Book{}).Where("id=?", borrowing.BookID).Update("available_copies",
 		gorm.Expr("available_copies + 1")).Error; err != nil {
@@ -31,7 +28,9 @@ func ReturnBook(borrowingID uint) error {
 }
 
 func BorrowingReturn(c *gin.Context) {
+
 	id, err := strconv.Atoi(c.Param("id"))
+	
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return

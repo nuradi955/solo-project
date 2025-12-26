@@ -12,7 +12,7 @@ type Borrowing struct {
 	Book   Book `json:"book"`
 
 	ReaderId   uint       `json:"reader_id" binding:"required"`
-	Reader     Reader     `json:"reader"`
+	Reader     Reader     `json:"-"`
 	BorrowedAt time.Time  `json:"borrowed_at" gorm:"autoCreateTime"`
 	DueDate    time.Time  `json:"due_date" gorm:"not null"`
 	ReturnedAt *time.Time `json:"returned_at"`
@@ -23,8 +23,3 @@ type CreateBorrowing struct {
 	BookID   uint `json:"book_id" binding:"required"`
 	ReaderId uint `json:"reader_id" binding:"required"`
 }
-
-// Author id, name, bio
-// Book id, author_id, title, isbn, total_copies, available_copies, category
-// Reader id, name, email, phone, membership_date
-// Borrowing id, book_id, reader_id, borrowed_at, due_date, returned_at, status

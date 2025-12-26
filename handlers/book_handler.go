@@ -30,20 +30,10 @@ func CreateBookHTTP(ctx *gin.Context) {
 	ctx.JSON(201, book)
 }
 
-// func GetBooks(ctx *gin.Context) {
-// 	var books []models.Book
-
-// 	if err := data_base.DB.Find(&books).Error; err != nil {
-// 		ctx.JSON(500, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	ctx.JSON(200, books)
-// }
 
 func GetBookByID(ctx *gin.Context) {
-	idParam := ctx.Param("id")
 
-	id, err := strconv.Atoi(idParam)
+	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "id должен быть числом"})
 		return
@@ -65,8 +55,8 @@ func GetBookByID(ctx *gin.Context) {
 }
 
 func UpdateBookHTTP(ctx *gin.Context) {
-	idParam := ctx.Param("id")
-	id, err := strconv.Atoi(idParam)
+	
+	id, err := strconv.Atoi(ctx.Param("id"))
 
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": "id должен быть числом"})
@@ -95,18 +85,13 @@ func UpdateBookHTTP(ctx *gin.Context) {
 func GetAvailableBooks(c *gin.Context) {
 
 	var books []models.Book
-	// var availableBooks []models.Book
+
 	res := data_base.DB.Where("available_copies>?", 0).Find(&books)
 
 	if res.Error != nil {
 		c.JSON(500, gin.H{"error": res.Error})
 		return
 	}
-	// for i, v := range books {
-	// 	if v.AvailableCopies > 0 {
-	// 		availableBooks = append(availableBooks, books[i])
-	// 	}
-	// }
 	c.JSON(200, books)
 }
 

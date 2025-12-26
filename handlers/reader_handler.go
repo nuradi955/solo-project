@@ -55,8 +55,19 @@ func GetReaderByID(c *gin.Context) {
 		c.JSON(404, err.Error())
 		return
 	}
+	var books []models.Book
 
-	c.JSON(200, gin.H{"reader": reader})
+	if err := data_base.DB.
+		Joins("JOIN borrowings ON borrowings.book_id = books.id").
+		Where("borrowings.reader_id = ?", id).
+		Find(&books).Error; err != nil {
+		c.JSON(500, err.Error())
+		return
+	}
+
+	c.JSON(200, books)
+
+	c.JSON(200, gin.H{"reader": reader.Name, "books": books})
 }
 
 func GetRearedHistory(c *gin.Context) {
@@ -67,9 +78,10 @@ func GetRearedHistory(c *gin.Context) {
 	}
 	var history []models.Borrowing
 
-	if err := data_base.DB.Where("reader_id=?", id).Preload("Book").First(&history).Error; err != nil {
+	if err := data_base.DB.Where("reader_id=?", id).Find(&history).Error; err != nil {
 		c.JSON(404, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(200, history)
 }
