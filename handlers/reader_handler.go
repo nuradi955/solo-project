@@ -65,8 +65,6 @@ func GetReaderByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, books)
-
 	c.JSON(200, gin.H{"reader": reader.Name, "books": books})
 }
 
