@@ -30,8 +30,7 @@ func main() {
 
 	r.POST("/borrowings", handlers.BorrowBookHTTP)
 	r.PATCH("/borrowings/:id/return", handlers.BorrowingReturn)
-	r.GET("borrowings", handlers.GetBorrowings)
-	r.GET("/borrowings/overdue", handlers.GetBorrowingsOverdueHTTP)
-// пытаюсь добавить 
+	r.GET("/borrowings", handlers.GetBorrowings)
+	r.GET("/borrowings/overdue", handlers.GetBorrowingsOverdueHTTP) 
 	r.Run()
 }

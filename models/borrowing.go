@@ -8,15 +8,15 @@ import (
 
 type Borrowing struct {
 	gorm.Model
-	BookID uint `json:"book_id" binding:"required"`
+	BookID uint `json:"book_id" gorm:"not null" `
 	Book   Book `json:"book"`
 
-	ReaderId   uint       `json:"reader_id" binding:"required"`
+	ReaderId   uint       `json:"reader_id" gorm:"not null"`
 	Reader     Reader     `json:"-"`
 	BorrowedAt time.Time  `json:"borrowed_at" gorm:"autoCreateTime"`
 	DueDate    time.Time  `json:"due_date" gorm:"not null"`
-	ReturnedAt *time.Time `json:"returned_at"`
-	Status     string     `json:"status" binding:"required, oneof= active returned overdue" gorm:"not null; check:(status IN ('active', 'returned', 'overdue'))"`
+	ReturnedAt *time.Time `json:"returned_at" `
+	Status     string     `json:"status" gorm:"not null; check:(status IN ('active', 'returned', 'overdue'))"`
 }
 
 type CreateBorrowing struct {
