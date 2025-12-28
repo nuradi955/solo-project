@@ -59,7 +59,7 @@ func GetReaderByID(c *gin.Context) {
 
 	if err := data_base.DB.
 		Joins("JOIN borrowings ON borrowings.book_id = books.id").
-		Where("borrowings.reader_id = ?", id).
+		Where("borrowings.reader_id = ? AND status IN ? ", id, []string{"active","overdue"}).
 		Find(&books).Error; err != nil {
 		c.JSON(500, err.Error())
 		return
