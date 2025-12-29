@@ -109,10 +109,7 @@ func GetBorrowings(c *gin.Context) {
 		c.JSON(404, gin.H{"error": err.Error()})
 		return
 	}
-	if len(borrowings) == 0 {
-		c.JSON(500, gin.H{"error": "выдачи не найдены"})
-		return
-	}
+
 	c.JSON(200, borrowings)
 }
 
@@ -129,9 +126,7 @@ func GetOverdueBorrowings() ([]models.Borrowing, error) {
 	if err := data_base.DB.Where("status=? AND due_date<?", "overdue", time.Now()).Find(&borrowings).Error; err != nil {
 		return nil, err
 	}
-	if len(borrowings) == 0 {
-		return nil, fmt.Errorf("просроченных выдач нет")
-	}
+	
 	return borrowings, nil
 }
 
